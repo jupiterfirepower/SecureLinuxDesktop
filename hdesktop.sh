@@ -21,22 +21,22 @@ for s in ./scripts/[0-9_]*; do
 done
 
 f_pre			# 01_pre
-#f_firewall		# 02_ufw
+f_firewall		# 02_ufw
 #f_preparefirewall       # 71_preparefirewall
 #f_iptablesfirewall      # 72_iptablesfirewall
-#f_remservices           # 41_remservices
-#f_remusersgroups        # 42_remusersgroups
-#f_clamav  		# 43_clamav
-#f_chkrootkit 	# 44_chkrootkit
-#f_portsentry    # 46_portsentry
+f_remservices           # 41_remservices
+f_remusersgroups        # 42_remusersgroups
+f_clamav  		# 43_clamav
+f_chkrootkit 	# 44_chkrootkit
+f_portsentry    # 46_portsentry
 #f_suricata      # 47_suricata
-#f_maldetect     # 48_maldetect
-#f_tor_privoxy	# 49_tor_privoxy
-#f_add_secutils  # 50_addsecutils acct arpwatch
-#f_logprotect	# 51_logprotect
-#f_bruteforce	# 52_bruteforce
-#f_autosecupdates # 53_autosecupdates
-#f_securetty 	# 54_securetty
+f_maldetect     # 48_maldetect
+f_tor_privoxy	# 49_tor_privoxy 
+f_add_secutils  # 50_addsecutils acct arpwatch 
+f_logprotect	# 51_logprotect
+#f_bruteforce	# 52_bruteforce 
+f_autosecupdates # 53_autosecupdates
+f_securetty 	# 54_securetty
 #f_filesperm	# 55_filesperm
 f_diffsettings  # 56_diffsettings
 f_disableguest  # 57_disableguest
@@ -52,8 +52,8 @@ f_firefoxuserpref # 67_firefoxuserpref
 #f_systemdconf	# 05_systemdconf
 #f_resolvedconf # 32_resolvedconf
 #f_logindconf	# 31_logindconf
-#f_journalctl    # 06_journalctl - 
-#f_timesyncd		# 07_timesyncd
+f_journalctl    # 06_journalctl - 
+f_timesyncd		# 07_timesyncd
 f_coredump		# 37_coredump
 #f_fstab		# 08_fstab -
 #f_prelink		# 09_prelink not for desktop Prelink и Preload для ускорения запуска программ в Linux
