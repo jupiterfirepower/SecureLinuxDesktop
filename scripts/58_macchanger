@@ -1,0 +1,20 @@
+function f_macchanger {
+
+	echo "[$i] Install mac address changer "
+	## macchanger
+	debconf-set-selections <<< 'macchanger macchanger/automatically_run boolean true'
+
+	apt-get -y install macchanger macchanger-gtk
+	# sudo cp -f macchanger.sh /etc/init.d/macchanger.sh
+        sed -i -e 's/ENABLE_ON_POST_UP_DOWN=false/ENABLE_ON_POST_UP_DOWN=true/g' /etc/default/macchanger
+	netdev=$(ls /sys/class/net | sed -nr '1s/^([^ ]+).*/\1/p')
+	sed -i -e "s/#ENABLE_INTERFACES=.*/ENABLE_INTERFACES=\"$netdev\"/g" "/etc/default/macchanger"
+	
+	touch /etc/network/if-up.d/changemac
+	echo "#!/bin/bash" >> /etc/network/if-up.d/changemac
+        echo "/usr/bin/macchanger -r $netdev" >> /etc/network/if-up.d/changemac
+	echo "exit 0" >> /etc/network/if-up.d/changemac
+	chmod 755 /etc/network/if-up.d/changemac
+
+  ((i++))
+}

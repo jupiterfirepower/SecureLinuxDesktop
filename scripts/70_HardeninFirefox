@@ -1,0 +1,96 @@
+function findUser() {
+    thisPID=$$
+    origUser=$(whoami)
+    thisUser=$origUser
+
+    while [ "$thisUser" = "$origUser" ]
+    do
+        ARR=($(ps h -p$thisPID -ouser,ppid;))
+        thisUser="${ARR[0]}"
+        myPPid="${ARR[1]}"
+        thisPID=$myPPid
+    done
+
+    getent passwd "$thisUser" | cut -d: -f1
+}
+
+function f_hardfirefox {
+	echo "[$i] Hardening Firefox Browser"
+	
+	adduser --system --quiet --shell /bin/false --group --disabled-password --disabled-login firefox
+    #mv /usr/bin/firefox /usr/bin/firefox-start
+    #sudo chatter +i /usr/bin/firefox
+    #sudo chattr -i /usr/bin/firefox
+
+    ouser=$(findUser)
+
+    #ouser=$(printf '%s\n' "${SUDO_USER:-$USER}")
+    homedir=$( getent passwd $ouser | cut -d: -f6 )
+    apt-get -y install firejail
+
+
+    file="/usr/local/bin/firefox-start"
+
+     if [[ ! -f $file ]]; then
+	mkdir -p /home/firefox/work
+	chown firefox:firefox /home/firefox/work
+        touch $file
+        echo "#!/bin/bash" >> /usr/local/bin/firefox-start
+        echo "rm -r /home/firefox/work/.adobe" >> /usr/local/bin/firefox-start
+        echo "rm -r /home/firefox/work/.macromedia" >> /usr/local/bin/firefox-start
+        echo "sudo -H -u firefox firejail --private-tmp --private=/home/firefox/work --seccomp --noroot --nogroups --tracelog --shell=none --caps.drop=all firefox -private-window -no-remote" >> /usr/local/bin/firefox-start
+        chown $ouser:$ouser /usr/local/bin/firefox-start
+        chmod +x /usr/local/bin/firefox-start
+        #chattr +i /usr/local/bin/firefox-start
+    fi
+
+    #We need to allow the 'firefox' user to access X, so we go to "System -> Preferences -> Startup Applications" and add a new startup program.
+    #The name and comment is irrelevant, but the command should be this:
+    #xhost +SI:localuser:firefox
+
+    mkdir -p $homedir/.config/autostart/
+
+    echo "User: $ouser"
+    echo "HomeDir : $homedir"
+    path=$(find $homedir -name "*-desktop")
+    echo "Path: $path"
+    cp -f $path/hardfirefox.desktop  $homedir/.config/autostart/hardfirefox.desktop
+    chmod -x $homedir/.config/autostart/hardfirefox.desktop
+    #or
+    #cp -f $(find $homedir/Downloads -name "*-desktop")/hardfirefox.desktop ~/.config/autostart/hardfirefox.desktop
+
+    #[5]
+    #This will add you into the group of 'firefox'.
+    #You will now need to reboot to make this come into effect..
+    sudo usermod -a -G firefox $USER
+    #To allow changes to be made by groups, you must run a chmod command on the user folder.
+
+    #[6]. Run `chmod -R g+rwxs ~firefox'
+    #This allows anybody in the 'firefox' group is make changes in the /home/firefox/ directory.
+    chmod -R g+rwxs ~firefox
+
+    #Making one last change, we edit /etc/sudoers(`sudo nano /etc/sudoers') and add in
+
+
+    echo "$ouser ALL=(firefox:firefox) NOPASSWD: ALL" >> /etc/sudoers
+
+    #Audio
+    #I, like many of you probably do, like to play music in my browser. Whether it be through HTML5, or Flash. But since our new user 'firefox' isn't part of the 'audio' group, we must add ourselves to it.
+    #[?]. Run `sudo usermod -a -G audio firefox'
+    #Now with another reboot(or logout), audio should be able to be played.
+    sudo usermod -a -G audio firefox
+    #Finally, due to multiple users using PULSE(your account, and then flash in the 'firefox' user), we have to set up 'firefox' to use a slave server, and your real user as the master.
+    #First of all, we want to copy the default pulseaudio settings to your home directory.
+    #[?]. Run `mkdir ~/.pulse/ ; cp /etc/pulse/default.pa ~/.pulse/'
+    mkdir -p ~/.pulse/ ; cp /etc/pulse/default.pa ~/.pulse/
+    #[?]. Run `nano ~/.pulse/default.pa'
+    #Add to the bottom of the file: "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1" and save.
+    echo "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1" >> ~/.pulse/default.pa
+
+    #And that's it. Firefox will automatically use use that as a master server, thus becoming a slave.
+    #There are probably security implications to do with this, but they would be minor.(At most, listening to microphone, which I doubt anyways)
+    #[?]. Run `mkdir ~firefox/.pulse/ ; echo "default-server = 127.0.0.1" > ~firefox/.pulse/client.conf' to make the firefox user use the real user audio.
+    mkdir -p ~firefox/.pulse/ ; echo "default-server = 127.0.0.1" > ~firefox/.pulse/client.conf
+
+  ((i++))
+}

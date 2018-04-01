@@ -1,0 +1,16 @@
+function f_myfstab {
+
+	echo "[$i] change /etc/fstab nount tmp with rw,noexec,nosuid,nodev and shm"
+	#mount /tmp With noexec,nodev,nosuid
+	sudo echo "tmpfs	/tmp	tmpfs	mode=1777,nosuid,nodev,noexec	0 0" >> /etc/fstab
+	#For most desktop and server configurations, it is advisable to mount this as read-only by adding the following line to the file "/etc/fstab."
+	#sudo echo "tmpfs	/run/shm	tmpfs	defaults,ro	 0 0" >> /etc/fstab
+	#sudo echo "none	/run/shm	tmpfs	defaults,ro	 0 0" >> /etc/fstab
+	#However, there are a few programs that would not work if "/run/shm" is mounted read only, such as Google Chrome. 
+	#If you use Chrome as your browser (or intend to use Chrome), 
+	#then "/run/shm" should be mounted read/write, and you should add the following line instead:
+	#sudo echo "none	/run/shm	tmpfs	rw,noexec,nosuid,nodev	0 0" >> /etc/fstab
+	sudo echo "tmpfs	/run/shm	tmpfs	rw,noexec,nosuid,nodev	0 0" >> /etc/fstab
+
+  ((i++))
+}

@@ -1,0 +1,12 @@
+function f_cronrkhunter {
+	echo "[$i] Cron rkhunter and update"
+	
+	rkhunter --update
+	
+	touch /etc/cron.daily/rkhunter.sh
+	echo "#!/bin/bash" >> /etc/cron.daily/rkhunter.sh
+    	echo "/usr/bin/rkhunter -c --cronjob 2>&1 | mail -s \"rkhunter scan results\" $USEREMAIL" >> /etc/cron.daily/rkhunter.sh
+	
+	chmod +x /etc/cron.daily/rkhunter.sh
+  ((i++))
+}

@@ -1,0 +1,19 @@
+function f_resolvedconf {
+  echo "[$i] Systemd/resolved.conf"
+
+  dnsarray=( $(grep nameserver /etc/resolv.conf | sed 's/nameserver//g') )
+  dnslist=${dnsarray[@]}
+
+  sed -i "s/^#DNS=.*/DNS=$dnslist/" "$RESOLVEDCONF"
+  sed -i "s/^#DNSSEC=.*/DNSSEC=allow-downgrade/" "$RESOLVEDCONF"
+  sed -i '/^hosts:/ s/files dns/files resolve dns/' /etc/nsswitch.conf
+
+  systemctl daemon-reload
+
+  if [[ $VERBOSE == "Y" ]]; then
+    systemctl status resolvconf.service --no-pager
+    echo
+  fi
+
+  ((i++))
+}

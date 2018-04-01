@@ -1,0 +1,27 @@
+function f_diffsettings {
+    echo "[$i] diffsettings add user etc"
+	apt-get -y update 
+	apt-get -y install --only-upgrade bash
+	apt-get -y autoremove
+	
+	#Create "shadow user" with sudo powers
+	#useradd -d /home/chefadm -s /bin/bash -m chefadm
+	#give the user sudo access
+	#usermod -a -G sudo chefadm
+	#passwd chefadm
+
+	#sudo echo "chefadm ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+	#echo "chefadm ALL=(ALL) PASSWD: ALL" >> /etc/sudoers
+	
+	sudo cupsctl --no-share-printers
+	
+	#suspend Cold Boot Attack
+	sudo systemctl mask suspend.target #sleep.target hibernate.target hybrid-sleep.target
+	#sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target
+	
+	#Deny "su" program to non-admins
+	dpkg-statoverride --update --add root sudo 4750 /bin/su
+	#echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+	
+  ((i++))
+}

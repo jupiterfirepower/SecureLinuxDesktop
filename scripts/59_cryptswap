@@ -1,0 +1,10 @@
+function f_cryptswap {
+
+	echo "[$i] Crypt swap"
+	apt-get -y install ecryptfs-utils
+	echo -ne 'y' | ecryptfs-setup-swap
+	sudo cryptsetup status /dev/mapper/cryptswap1
+	swapon -s
+	#sudo dmsetup info /dev/dm-0
+  ((i++))
+}

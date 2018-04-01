@@ -1,0 +1,51 @@
+function f_logprotect {
+    echo "[$i] Log Protection with attribute chattr +a +i"
+	# Log Protection
+	# Authorization Log
+	chattr +a /var/log/auth.log
+	# Boot Log
+	chattr +a /var/log/boot.log
+	# Boot Strap Log
+	chattr +a /var/log/bootstrap.log
+	# Daemon Log
+	chattr +a /var/log/daemon.log
+	# Debug Log
+	chattr +a /var/log/debug
+	# Kernel Log
+	chattr +a /var/log/kern.log
+	# Kernel Ring Buffer
+	chattr +a /var/log/dmesg
+	# System Log
+	#System Logging Daemon (syslogd)
+	chattr +a /var/log/syslog
+	chattr +a /var/log/messages
+	#Rootkit Hunter Log (rkhunter) 
+	chattr +a /var/log/rkhunter.log
+	# Non-Human-Readable Logs
+	# Login Failures Log
+	chattr +a /var/log/faillog
+	# Last Logins Log
+	chattr +a /var/log/lastlog
+	# Login Records Log
+	chattr +a /var/log/wtmp
+	# UFW FIREWALL Log
+	chattr +a /var/log/ufw.log
+	# Last Log
+	chattr +a /var/log/last.log
+
+	# http://packetstormsecurity.org/linux/admin/lcap-0.0.3.tar.bz2 
+	#To unpack and compile the tool, run this command:
+	# tar xvfj lcap-0.0.3.tar.bz2 && cd lcap-0.0.3 && make
+	#Then, to disallow modification of the append-only flag, run:
+	# ./lcap CAP_LINUX_IMMUTABLE
+	# ./lcap CAP_SYS_RAWIO
+
+
+	#http://snort-wireless.org/other/lcap-0.0.6.tar.bz2
+	sudo mkdir /usr/local/lcap-0.0.6
+	sudo tar xvfj $HOME/linsecprotect/lcap-0.0.6.tar.bz2 -C /usr/local
+	sudo sed -i -e '/#include <ctype.h>/a #include <linux/limits.h>' /usr/local/lcap-0.0.6/lcap.c 
+	cd /usr/local/lcap-0.0.6 && make
+
+  ((i++))
+}

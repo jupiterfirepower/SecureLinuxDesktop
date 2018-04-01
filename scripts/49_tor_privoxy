@@ -1,0 +1,14 @@
+function f_tor_privoxy {
+    echo "[$i] Install tor and privoxy anonimity and privacy"
+	apt-get -y install tor 
+	apt-get -y install privoxy
+	cp /etc/privoxy/config /etc/privoxy/config.backup 
+	sed -i -e '/^#.* forward-socks5t   \//s/^#//' /etc/privoxy/config
+	sed -i -e '/^#.* forward         192.168.*.* /s/^#//' /etc/privoxy/config
+	sed -i -e '/^#.* forward            10.*.*.* /s/^#//' /etc/privoxy/config
+	sed -i -e '/^#.* forward           127.*.*.* /s/^#//' /etc/privoxy/config
+
+	/etc/init.d/privoxy restart
+
+  ((i++))
+}

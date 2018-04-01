@@ -1,0 +1,61 @@
+# Pale Moon for Linux installer
+
+- Version 0.2.3
+
+---
+
+## Using the installer
+
+- Extract the contents of the archive to your home directory.
+- Run the "pminstaller.sh" script from the file manager by double clicking on 
+it. If this does not work for some reason, then enter the following into a 
+terminal window:
+
+    ~/pminstaller.sh
+
+  (Assuming the "pminstaller.sh" script is placed in the home directory, as 
+mentioned above).
+- Follow the on-screen prompts to download and install Pale Moon.
+
+Notes:
+
+- At this time, the pminstaller can only download and install the latest 
+version of Pale Moon. If you need a specific version of the browser, you'll 
+have to download and extract it manually.
+- Some file managers treat the pminstaller.sh file as a normal text file and 
+will try to open it as such (in a text editor). In such cases you must run the 
+installer in a terminal using this command: 
+/path/to/the/installer/pminstaller.sh
+- Do not invoke the installer as root (e.g. "sudo ./pminstaller.sh"). On some 
+distros, the sudo command will strip the XAUTHORITY variable (without which any 
+graphical program cannot run). The installer automatically elevates itself 
+using su(do).
+- If you recieve a "Gtk-WARNING **: cannot open display" error when trying to 
+run the installer, ensure that xhost is installed on your system then try to 
+run the installer again.
+- The installer may not run on some "lightweight" distributions since the 
+standard command line tools use busybox (which does not implement all features 
+of the required command line tools).
+- If the installer does not run because the built-in copy of yad complains 
+about being unable to load a particular library, then you likely do not have 
+the basic dependencies required for any recent Mozilla based product. Please 
+update the related libraries and try again.
+- If you have any specialized requirements that the installer does not serve 
+out of the box, then please use the manual installation instructions on the 
+Pale Moon for Linux site (https://linux.palemoon.org/help/installation/).
+- For further information, please check the pminstaller release notes or visit 
+the forum.
+
+## Support
+
+If you need support, please post on the dedicated Linux board of the Pale Moon 
+forum.
+
+Support is not provided for older versions of the installer. Please use the 
+latest version at all times.
+
+You can download the latest version from 
+https://linux.palemoon.org/download/installer/
+
+Release notes for pminstaller are available at 
+https://linux.palemoon.org/installer-release-notes/

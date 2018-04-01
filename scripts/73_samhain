@@ -1,0 +1,10 @@
+function f_samhain {
+	echo "[$i] Install and configure Samhain(Host Integrity Monitoring System)"
+	
+	cd $PWD/samhain
+	./samhain.sh
+	cp $PWD/samhainerc /etc/samhainrc
+	chown root:root /etc/samhainrc
+	
+  ((i++))
+}

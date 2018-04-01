@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=xhost +SI:localuser:firefox
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
+Hidden=false
+Name[en_US]=hardfirefox
+Comment[en_US]=hardfirefox
+X-GNOME-Autostart-Delay=20

@@ -1,0 +1,18 @@
+function f_securetty {
+	echo "[$i] Securing the Console from root /etc/securetty"
+	#Securing the Console from root
+	# See /etc/security/access.conf
+	#for (( i=2; i<=63; i++ ))
+	#do
+	#   sudo sed -i -e 's/^tty$i/s/^/#/g' /etc/securetty
+	#done
+
+	sed -i -e  '/^tty[0-9][0-9]/s/^/#/g' /etc/securetty
+	sed -i -e  '/^tty8/s/^/#/g' /etc/securetty
+	sed -i -e  '/^tty9/s/^/#/g' /etc/securetty
+
+	chown root:root /etc/securetty
+	chmod 0600 /etc/securetty
+
+  ((i++))
+}

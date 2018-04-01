@@ -1,0 +1,12 @@
+function f_ctrlaltdel {
+  echo "[$i] Ctrl-alt-delete"
+
+  systemctl mask ctrl-alt-del.target
+
+  if [[ $VERBOSE == "Y" ]]; then
+    systemctl status ctrl-alt-del.target --no-pager
+    echo
+  fi
+
+  ((i++))
+}

@@ -1,0 +1,3 @@
+tmpfs   /var/cache/apt/archives tmpfs   defaults        0       0
+tmpfs /var/tmp tmpfs defaults 0 0
+tmpfs /var/spool/postfix tmpfs defaults 0 0

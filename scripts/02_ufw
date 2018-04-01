@@ -1,0 +1,55 @@
+function f_firewall {
+  echo "[$i] Enable ufw"
+
+  if ! test -f "$UFWDEFAULT"; then
+    echo "$UFWDEFAULT does not exist."
+
+    if ! dpkg -l | grep ufw 2> /dev/null 1>&2; then
+      echo 'ufw package is not installed.'
+	  apt-get -y install ufw
+    fi
+
+    return
+  fi
+  
+  apt-get -y install xtables-addons-dkms
+  apt-get -y install ipset
+#apt-get install dnscrypt-proxy     
+  ufw default deny incoming
+  ufw default allow outgoing
+  
+  ufw --force enable
+  
+  ufw allow out to any port 53	#dns
+  ufw allow out to any port 80	#http
+  ufw allow out to any port 443	#https
+  ufw allow out to any port 993	# gmail imap ssl
+  ufw allow out to any port 995	# gmail pop3 ssl
+  ufw allow out to any port 465	# gamil smtp ssl
+  ufw allow out to any port 587	# gamil smtp tls
+  
+  sed -i '/#   ufw-before-forward/r mangle_raw_iptable.rules' /etc/ufw/before.rules
+  sed -i '/# End required lines/r filter_iptable.rules' /etc/ufw/before.rules
+  sed -i '/### END INIT INFO/r additional.rc.local' /etc/init.d/rc.local
+  cp -f sysctl.conf /etc/sysctl.conf
+  cp -f sysctl.conf /etc/ufw/sysctl.conf
+
+  #sed -i 's/IPT_SYSCTL=.*/IPT_SYSCTL=\/etc\/sysctl\.conf/' "$UFWDEFAULT"
+  ufw reload
+
+  for admin in $FW_ADMIN; do
+	ufw allow log from "$admin" to any port 22 proto tcp
+  done
+  
+  if [[ $VERBOSE == "Y" ]]; then
+    systemctl status ufw.service --no-pager
+    ufw status verbose
+    echo
+  fi
+
+  apt-get update
+  apt-get upgrade
+  apt-get dist-upgrade
+
+  ((i++))
+}

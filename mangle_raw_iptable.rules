@@ -1,0 +1,60 @@
+*mangle
+:PREROUTING ACCEPT [0:0]
+-A PREROUTING -m conntrack --ctstate INVALID -j DROP
+
+### 2: Drop TCP packets that are new and are not SYN ###
+-A PREROUTING -p tcp ! --syn -m conntrack --ctstate NEW -j DROP
+### 3: Drop SYN packets with suspicious MSS value ###
+-A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
+### 4: Block packets with bogus TCP flags ###
+-A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+-A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+-A PREROUTING -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+-A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+-A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
+-A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+-A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
+-A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+-A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+-A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
+-A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+
+### 6: Drop ICMP (you usually don't need this protocol) ###
+-A PREROUTING -p icmp -j DROP
+
+### 7: Drop fragments in all chains ###
+-A PREROUTING -f -j DROP
+
+COMMIT
+
+*raw
+:PREROUTING ACCEPT [0:0]
+#Block Well-Known TCP Attacks
+#The attacks being blocked are, respectively:
+#SYN-FIN attack
+#SYN-RST attack
+#X-Mas attack
+#nmap FIN scan
+#NULLflags attack
+#ALLflags attack
+#Add the following rules, preferably in 
+-A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+-A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,PSH,URG -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+-A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,PSH,ACK,URG -j DROP
+
+#Block ICMP attacks
+#Add the following rules, preferably in -t raw -A PREROUTING
+-A PREROUTING -p icmp -m u32 ! --u32 "4&0x3FFF=0"   -j DROP
+-A PREROUTING -p icmp -m length --length 1492:65535 -j DROP
+#The first rule blocks all ICMP packets whose "fragmentation flag" is not 0. (ICMP should never be fragmented; they should be carrying small payloads)
+#The second rule blocks oversized unfragmented ICMP packets.
+
+COMMIT
+
+

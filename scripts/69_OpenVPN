@@ -1,0 +1,23 @@
+function f_openvpn {
+	echo "[$i] Install and configure OpenVpn"
+	
+	$APT install unzip
+	$APT install openvpn
+	#https://www.vpnbook.com/
+	#https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-Euro1.zip #EUROPE
+	#https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-Euro2.zip #EUROPE
+	#https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-US1.zip #USA
+	#https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-US2.zip #USA
+	#https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-CA1.zip #Canada
+	#https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-DE1.zip #German
+	wget https://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-Euro2.zip
+	currentDir=$(pwd)
+	mkdir $currentDir/ovpncert
+	unzip VPNBook.com-OpenVPN-Euro2.zip -d $currentDir/ovpncert
+	cd $currentDir/ovpncert
+	sudo openvpn --config vpnbook-euro2-tcp443.ovpn
+	cd $currentDir
+	#Username: vpnbook
+	#Password: peswU6
+  ((i++))
+}

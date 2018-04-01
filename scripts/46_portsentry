@@ -1,0 +1,9 @@
+function f_portsentry {
+  echo "[$i] Install and configure portsentry"	
+  # echo -ne "\n"
+  apt-get -y install portsentry
+  sed -i -e 's/BLOCK_UDP="0"/BLOCK_UDP="1"/g' /etc/portsentry/portsentry.conf
+  sed -i -e 's/BLOCK_TCP="0"/BLOCK_TCP="1"/g' /etc/portsentry/portsentry.conf
+
+  ((i++))
+}

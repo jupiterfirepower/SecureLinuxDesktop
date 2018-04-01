@@ -1,0 +1,66 @@
+function f_suricata {
+	echo "[$i] Install suricata analog snort"
+	
+	add-apt-repository ppa:oisf/suricata-stable -y
+	apt-get -y update && sudo apt-get -y install suricata
+
+    #sudo apt-get -y install libpcre3 libpcre3-dbg libpcre3-dev \
+    #build-essential autoconf automake libtool libpcap-dev libnet1-dev \
+    #libyaml-0-2 libyaml-dev zlib1g zlib1g-dev libcap-ng-dev libcap-ng0 \
+    #make libmagic-dev
+
+    #sudo wget https://www.openinfosecfoundation.org/download/suricata-3.2.1.tar.gz
+    #tar -xvzf suricata-3.2.1.tar.gz
+    #cd suricata-*
+    #./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+    #make
+    #sudo make install
+    #sudo ldconfig
+
+    #echo "[$i] Create suricata direcories"
+    #sudo mkdir /var/log/suricata
+    #sudo mkdir /etc/suricata
+    
+    #echo "[$i] Copy suricata config files to /etc/suricata"
+    #sudo cp classification.config /etc/suricata
+    #sudo cp reference.config /etc/suricata
+    #sudo cp suricata.yaml /etc/suricata
+    #sudo cp threshold.config /etc/suricata
+
+    #echo "[$i] Download suricata rules"
+    #sudo wget http://rules.emergingthreats.net/open/suricata/emerging.rules.tar.gz
+    #sudo tar zxvf emerging.rules.tar.gz
+    #echo "[$i] Copy suricata rules to /etc/suricata/"
+    #sudo cp -r rules /etc/suricata/
+
+    #ifconfig -a | sed 's/[ \t].*//;/^$/d' | sed -nr '1s/^([^ ]+).*/\1/p'
+    #inetaddr=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+    #sudo sed -i -e "s/192.168.0.0\/16,10.0.0.0\/8,172.16.0.0\/12/$inetaddr\/24/1" "/etc/suricata/suricata.yaml"
+    #sudo sed -i -e "s/  linux: \[\]/  linux: \[$inetaddr\/24\]/1" "/etc/suricata/suricata.yaml"
+
+    networkdev=$(ifconfig -a | sed 's/[ \t].*//;/^$/d' | sed -nr '1s/^([^ ]+).*/\1/p')
+    # Change network device
+    sudo sed -i -e "s/IFACE=eth0/IFACE=$networkdev/1" "/etc/default/suricata"
+    sudo sed -i -e 's/LISTENMODE=af-packet/LISTENMODE=pcap/1' /etc/default/suricata
+
+    sed -i -e "s/192.168.0.0\/16,10.0.0.0\/8,172.16.0.0\/12/192.168.0.0\/24/1" "/etc/suricata/suricata.yaml"
+    sed -i -e "s/  linux: \[\]/  linux: \[192.168.0.0\/24\]/1" "/etc/suricata/suricata.yaml"
+    sed -i -e 's/mpm-algo: auto/mpm-algo: b2g/1' /etc/suricata/suricata.yaml
+    sed -i -e "/af-packet:/{n;s/  - interface: .*/  - interface: $networkdev/1}" "/etc/suricata/suricata.yaml"
+    sed -i -e "/pcap:/{n;s/  - interface: .*/  - interface: $networkdev/1}" "/etc/suricata/suricata.yaml"
+    sed -i -e "/pfring:/{n;s/  - interface: .*/  - interface: $networkdev/1}" "/etc/suricata/suricata.yaml"
+    sed -i -e 's/#pid-file: /var/run/suricata.pid/pid-file: /var/run/suricata.pid/1' /etc/suricata/suricata.yaml
+
+    # Enable additional log
+    sed -i -e '/  - dns-log:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    sed -i -e '/  - drop:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    
+    #sed -i -e '/  - http-log:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    #sed -i -e '/  - tls-log:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    #sed -i -e '/  - tls-store:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    #sed -i -e '/  - alert-debug:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    #sed -i -e '/  - tcp-data:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+    #sed -i -e '/  - http-body-data:/{n;s/enabled: .*/enabled: yes/}' /etc/suricata/suricata.yaml
+
+  ((i++))
+}

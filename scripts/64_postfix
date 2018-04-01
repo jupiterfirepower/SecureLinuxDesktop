@@ -1,0 +1,7 @@
+function f_postfix {
+	echo "[$i] Install postfix"
+	
+	$APT install postfix
+
+  ((i++))
+}

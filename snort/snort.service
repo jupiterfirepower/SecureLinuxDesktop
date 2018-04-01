@@ -1,0 +1,11 @@
+[Unit]
+Description=Snort NIDS Daemon
+After=syslog.target network.target
+[Service]
+TimeoutStartSec=0
+Type=forking
+PIDFile=/run/snort_enp5s0.pid
+Type=simple
+ExecStart=/usr/local/bin/snort -q -c /etc/snort/snort.conf -l /var/log/snort -i enp5s0 -D
+[Install]
+WantedBy=multi-user.target

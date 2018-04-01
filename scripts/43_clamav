@@ -1,0 +1,8 @@
+function f_clamav {
+  echo "[$i] Install clamav antivirus"
+  # antivirus
+  apt-get -y install clamav clamav-daemon clamav-freshclam
+  apt-get -y install clamtk
+
+  ((i++))
+}

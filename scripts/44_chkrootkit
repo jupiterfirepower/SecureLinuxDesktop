@@ -1,0 +1,7 @@
+function f_chkrootkit {
+  echo "[$i] Install chkrootkit"	
+  # antivirus
+  apt-get -y install chkrootkit
+
+  ((i++))
+}

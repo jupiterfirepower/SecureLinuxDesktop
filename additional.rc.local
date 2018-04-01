@@ -1,0 +1,25 @@
+/usr/local/lcap-0.0.6/lcap CAP_LINUX_IMMUTABLE
+/usr/local/lcap-0.0.6/lcap CAP_SYS_RAWIO
+
+export LD_LIBRARY_PATH=/usr/local/lib
+
+/sbin/ipset -N kiddies iphash
+/sbin/iptables -t raw -N kiddies
+/sbin/iptables -t raw -A kiddies -j MARK --set-mark 13
+/sbin/iptables -t raw -A kiddies -j NOTRACK
+/sbin/iptables -t raw -I PREROUTING -m set --match-set kiddies src -j kiddies
+/sbin/iptables -N kiddies
+/sbin/iptables -A kiddies -p tcp -j CHAOS --tarpit
+/sbin/iptables -A kiddies -j DROP
+/sbin/iptables -N blklst_n_lock
+/sbin/iptables -A blklst_n_lock -j SET --add-set kiddies src
+/sbin/iptables -A blklst_n_lock -j kiddies
+/sbin/iptables -I INPUT -m psd -j blklst_n_lock
+/sbin/iptables -I INPUT -m mark --mark 13 -j kiddies
+
+#netdev=$(ifconfig -a | sed 's/[ \t].*//;/^$/d' | sed -nr '1s/^([^ ]+).*/\1/p')
+#/usr/bin/suricata -c /etc/suricata/suricata.yaml -i $netdev -D
+
+#echo 1024 > /sys/block/sda/queue/read_ahead_kb
+#echo 1024 > /sys/block/sda/queue/nr_requests
+

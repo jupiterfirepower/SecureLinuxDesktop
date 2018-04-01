@@ -1,0 +1,13 @@
+function f_disableguest {
+	echo "[$i] Disable Guest account for lightdm"
+	#Create a new custom configuration file:
+	#sudo mkdir /etc/lightdm/lightdm.conf.d
+	touch /etc/lightdm/lightdm.conf.d/50-my-custom.conf
+	#In the 50-my-custom.conf file add:
+	echo "[SeatDefaults]" >> /etc/lightdm/lightdm.conf.d/50-my-custom.conf
+	echo "allow-guest=false" >> /etc/lightdm/lightdm.conf.d/50-my-custom.conf
+	#Restart lightdm:
+	#service lightdm restart
+
+  ((i++))
+}

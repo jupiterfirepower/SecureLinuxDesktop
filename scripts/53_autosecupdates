@@ -1,0 +1,21 @@
+function f_autosecupdates {
+	echo "[$i] Enable automatic security updates"
+	#Enable automatic security updates
+	#Enabling automatic updates can be very important to secure your server. To install the “unattended-upgrades,”  run
+	apt-get -y install unattended-upgrades
+	apt-get -y install aptitude
+	aptitude -y install dpkg-reconfigure
+	dpkg-reconfigure -plow unattended-upgrades
+
+	touch /etc/apt/apt.conf.d/10periodic
+
+	echo "APT::Periodic::Update-Package-Lists \"1\";">>/etc/apt/apt.conf.d/10periodic
+	echo "APT::Periodic::Download-Upgradeable-Packages \"1\";">>/etc/apt/apt.conf.d/10periodic
+	echo "APT::Periodic::AutocleanInterval \"7\";">>/etc/apt/apt.conf.d/10periodic
+	echo "APT::Periodic::Unattended-Upgrade \"1\";">>/etc/apt/apt.conf.d/10periodic
+
+	apt-get -y install apticron
+	sed -i -e 's/EMAIL="root"/EMAIL="linsecadmin@gmail.com"/g' /etc/apticron/apticron.conf
+
+  ((i++))
+}

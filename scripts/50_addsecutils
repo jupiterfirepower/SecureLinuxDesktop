@@ -1,0 +1,51 @@
+function f_add_secutils {
+    echo "[$i] Install debsums arpwatch acct"
+	apt-get -y install debsums
+	# sudo debsums --all
+	# sudo debsums --config
+	# sudo debsums --changed
+	# sudo debsums --list-missing
+
+	#  * Check your resolv.conf file and fill in a backup nameserver if possible [NETW-2705] 
+	#  https://cisofy.com/controls/NETW-2705/
+
+	# sudo wget -O fixdns http://72.249.185.185/fixdns
+	# bash fixdns
+
+	#  * Consider running ARP monitoring software (arpwatch,arpon) [NETW-3032] 
+	# https://cisofy.com/controls/NETW-3032/
+	apt-get -y install arpwatch
+	apt-get -y install sysv-rc-conf
+	sysv-rc-conf --level 35 arpwatch on
+	/etc/init.d/arpwatch start
+
+	#arpwatch -i eth0
+	# So, whenever a new MAC is plugged or a particular IP is changing his MAC address on the network, you will notice syslog entries at ‘/var/log/syslog‘ or ‘/var/log/message‘ file.
+	#tail -f /var/log/messages
+
+	# * Check what deleted files are still in use and why. [LOGG-2190] 
+	# https://cisofy.com/controls/LOGG-2190/
+
+
+	lsof -F sn0 | tr -d '\000' | grep deleted | sed 's/^[a-z]*\([0-9]*\)n/\1 /' | sort -n
+	lsof | grep "(deleted)$" | sed -re 's/^\S+\s+(\S+)\s+\S+\s+([0-9]+).*/\1\/fd\/\2/' | while read file; do sudo bash -c ": > /proc/$file"; done
+	#sudo find /proc/*/fd -ls 2> /dev/null | awk '/deleted/ {print $11}' | xargs -p -n 1 truncate -s 0
+
+	#  * Enable process accounting [ACCT-9622] 
+	#      https://cisofy.com/controls/ACCT-9622/
+	apt-get -y install acct
+	# Display Statistics of Users Day-wise  ac -d
+	# Print All Account Activity Information sa
+	# Print Individual User Information sa -u
+
+	# * Install a file integrity tool to monitor changes to critical and sensitive files [FINT-4350] 
+	# https://cisofy.com/controls/FINT-4350/
+	# https://help.ubuntu.com/community/FileIntegrityAIDE
+	# sudo apt-get install aide
+
+	#* Purge old/removed packages (3 found) with aptitude purge or dpkg --purge command. This will cleanup old configuration files, cron jobs and startup scripts. [PKGS-7346] 
+	#  https://cisofy.com/controls/PKGS-7346/
+	sudo dpkg --get-selections | grep deinstall | awk '{print $1}' | xargs sudo apt-get --dry-run purge
+
+  ((i++))
+}

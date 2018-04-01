@@ -1,0 +1,16 @@
+function f_bruteforce {
+	echo "[$i] Install Brute Force Detection"
+	#Install Brute Force Detection
+	wget http://www.rfxnetworks.com/downloads/bfd-current.tar.gz
+	tar -xvzf bfd-current.tar.gz
+	#cd bfd-1.5-2
+	cd bfd-*
+	./install.sh
+
+	sed -i -e 's/ALERT_USR="0"/ALERT_USR="1"/g' /usr/local/bfd/conf.bfd
+	sed -i -e 's/EMAIL_USR="root"/EMAIL_USR="linsecadmin@gmail.com"/g' /usr/local/bfd/conf.bfd
+	#Start BFD with the following command:
+	/usr/local/sbin/bfd –s
+
+  ((i++))
+}

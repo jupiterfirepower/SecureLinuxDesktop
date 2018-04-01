@@ -1,0 +1,89 @@
+function findUser() {
+    thisPID=$$
+    origUser=$(whoami)
+    thisUser=$origUser
+
+    while [ "$thisUser" = "$origUser" ]
+    do
+        ARR=($(ps h -p$thisPID -ouser,ppid;))
+        thisUser="${ARR[0]}"
+        myPPid="${ARR[1]}"
+        thisPID=$myPPid
+    done
+
+    getent passwd "$thisUser" | cut -d: -f1
+}
+
+function f_firefoxuserpref {
+	echo "[$i] Install FireFox about:config parameters copy user.js to profile"
+	
+	user=$(findUser)
+	echo "logged in: $user"
+
+	$APT install firefox
+	#su - $SUDO_USER -c "firefox & sleep 12; kill $!" 
+	#sudo -H -u otheruser bash -c 'echo "I am $USER, with uid $UID"' 
+	su - $user -c "firefox & sleep 12; killall firefox > /dev/null"
+	echo "change owner ~/.mozilla ..."
+	chown -R $user:$user ~/.mozilla
+	chown -hR $user:$user ~/.cache/mozilla
+	chown -R $user:$user ~/.cache/
+
+	#user_pref("network.proxy.backup.ftp", "127.0.0.1");
+	#user_pref("network.proxy.backup.ftp_port", 8118);
+	#user_pref("network.proxy.backup.socks", "127.0.0.1");
+	#user_pref("network.proxy.backup.socks_port", 8118);
+	#user_pref("network.proxy.backup.ssl", "127.0.0.1");
+	#user_pref("network.proxy.backup.ssl_port", 8118);
+	#user_pref("network.proxy.ftp", "127.0.0.1");
+	#user_pref("network.proxy.ftp_port", 8118);
+	#user_pref("network.proxy.http", "127.0.0.1");
+	#user_pref("network.proxy.http_port", 8118);
+	#user_pref("network.proxy.share_proxy_settings", true);
+	#user_pref("network.proxy.socks", "127.0.0.1");
+	#user_pref("network.proxy.socks_port", 8118);
+	#user_pref("network.proxy.ssl", "127.0.0.1");
+	#user_pref("network.proxy.ssl_port", 8118);
+	#user_pref("network.proxy.type", 1);
+
+	# Firefox
+	proxyhost="127.0.0.1"
+	proxyport=8118
+	PREFS_FILE="${HOME}/.mozilla/firefox/$(cat ${HOME}/.mozilla/firefox/profiles.ini | grep Path | sed 's/Path=//')/prefs.js"
+	if [ -e $PREFS_FILE ]; then
+	 echo "updating firefox config..."
+	 sed -i '/^user_pref("network.proxy./d' $PREFS_FILE
+	 echo "user_pref(\"network.proxy.backup.ftp\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.backup.ftp_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.backup.socks\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.backup.socks_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.backup.ssl\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.backup.ssl_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.ftp\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.ftp_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.http\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.http_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.share_proxy_settings\", true);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.socks\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.socks_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.socks_remote_dns\", true);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.ssl\", \"$proxyhost\");" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.ssl_port\", $proxyport);" >> $PREFS_FILE
+	 echo "user_pref(\"network.proxy.type\", 1);" >> $PREFS_FILE
+
+	 echo "user_pref(\"browser.cache.disk.enable\", false);" >> $PREFS_FILE
+         echo "user_pref(\"browser.cache.disk.capacity\", 0);" >> $PREFS_FILE
+	 echo "user_pref(\"browser.cache.memory.enable\", true);" >> $PREFS_FILE
+	fi
+
+	
+	echo "copy user.js settings to profile"
+	homedir=$( getent passwd $user | cut -d: -f6 )
+	firefoxProfile=$(find $homedir/.mozilla/firefox/ -name "*.default")
+	touch $firefoxProfile/user.js
+	chown $user:$user $firefoxProfile/user.js
+	cp -f $(find $homedir -name "*-desktop")/user.js $(find $homedir/.mozilla/firefox/ -name "*.default")/user.js
+	chown $user:$user $firefoxProfile/user.js
+
+  ((i++))
+}

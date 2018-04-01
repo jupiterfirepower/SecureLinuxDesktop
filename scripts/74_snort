@@ -1,0 +1,8 @@
+function f_snort {
+
+	echo "[$i] Install and configure Snort"
+	cd snort/
+	./snort.sh
+	
+  ((i++))
+}

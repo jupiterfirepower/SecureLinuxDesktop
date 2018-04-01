@@ -1,0 +1,26 @@
+function f_maldetect {
+	echo "[$i] Install LMD(Linux Malware Detect)"
+
+	# install package inotify-tools 
+	apt-get -y install inotify-tools
+
+	# Downloading LMD archive file #
+	wget http://www.rfxn.com/downloads/maldetect-current.tar.gz
+	# Extracting LMD archive file #
+	tar -zxvf maldetect-current.tar.gz
+	# Navigate to extracted directory #
+	cd maldetect-*
+    cd maldetect-1.6.1
+	# Install LMD #
+	./install.sh
+
+	sed -i -e 's/email_alert=\"0\"/email_alert=\"1\"/1' /usr/local/maldetect/conf.maldet
+	sed -i -e 's/email_addr=\"\"/email_addr=\"$USEREMAIL\"/1' /usr/local/maldetect/conf.maldet
+	sed -i -e 's/autoupdate_signatures=\"0\"/autoupdate_signatures=\"1\"/1' /usr/local/maldetect/conf.maldet
+	sed -i -e 's/quarantine_hits=\"0\"/quarantine_hits=\"1\"/1' /usr/local/maldetect/conf.maldet
+	sed -i -e 's/quarantine_clean=\"0\"/quarantine_clean=\"1\"/1' /usr/local/maldetect/conf.maldet
+	sed -i -e 's/quarantine_clean=\"0\"/quarantine_clean=\"1\"/1' /usr/local/maldetect/conf.maldet
+    sed -i -e 's/ExecStart=.*/ExecStart=\/usr\/local\/maldetect\/maldet --monitor \/tmp,\/home,\/var,\/root/1' /usr/lib/systemd/system/maldet.service
+
+  ((i++))
+}

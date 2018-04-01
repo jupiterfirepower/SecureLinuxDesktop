@@ -1,0 +1,7 @@
+function f_securedelete {
+
+	echo "[$i] Install secure-delete srm"
+	apt-get install secure-delete
+	#srm секретный-файл.txt home-video.mpg
+  ((i++))
+}

@@ -1,0 +1,44 @@
+function f_remusersgroups {
+	echo "[$i] Remove users and groups"
+	# Remove Users
+	userdel -r -f games
+	userdel -r -f lp
+	userdel -r -f saned
+	userdel -r -f news
+	#sudo userdel -r -f nobody need for rkhanter postfix install
+	userdel -r -f gnats
+	userdel -r -f irc
+	userdel -r -f list
+	userdel -r -f uucp
+	#sudo userdel -r -f www-data
+	#userdel -r -f proxy
+	# Remove Groups
+	groupdel lp
+	groupdel news
+	groupdel uucp
+	#sudo groupdel proxy
+	#sudo groupdel postgres
+	#sudo groupdel www-data
+	#sudo groupdel backup
+	groupdel operator
+	groupdel list
+	groupdel irc
+	groupdel src
+	groupdel gnats
+	groupdel staff
+	groupdel games
+	groupdel users
+	groupdel lpadmin # printer
+	groupdel scanner # scanner
+	#sudo groupdel gdm
+	#sudo groupdel telnetd
+	#sudo groupdel gopher
+	#sudo groupdel ftp
+	#sudo groupdel nscd
+	#sudo groupdel rpc
+	#sudo groupdel rpcuser
+	#sudo groupdel nfsnobody
+	#sudo groupdel xfs
+
+  ((i++))
+}

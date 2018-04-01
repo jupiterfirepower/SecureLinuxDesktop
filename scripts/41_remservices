@@ -1,0 +1,33 @@
+function f_remservices {
+	echo "[$i] Remove error report services"
+	
+	# Remove ubuntu error report services
+	sed -i -e 's/enabled=1/enabled=0/g' /etc/default/apport
+	sh -c 'echo "enabled=0" > /etc/default/apport'
+	#If you want to temporary enable apport, do:
+	#sudo service apport start force_start=1
+	
+	systemctl disable whoopsie
+	systemctl disable apport
+	apt-get -y remove --purge whoopsie
+	apt-get -y remove --purge apport
+
+	# remove printer scanner
+	systemctl disable cups
+	systemctl disable saned
+
+	apt-get -y remove --purge cups
+	apt-get -y remove --purge saned
+
+	apt-get -y remove --purge anacron
+	apt-get -y remove --purge kerneloops
+	apt-get -y remove --purge brltty
+
+	#sudo systemctl disable ufw.service
+	systemctl disable ureadahead.service
+	systemctl disable accounts-daemon.service
+	systemctl disable bluetooth.service
+        systemctl disable fwupd.service
+
+  ((i++))
+}
